@@ -1,5 +1,6 @@
-package com.example.sigapp
+package com.example.sigapp.API
 
+import com.example.sigapp.BASE_URL
 import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

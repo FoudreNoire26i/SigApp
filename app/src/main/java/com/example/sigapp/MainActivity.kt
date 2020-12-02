@@ -15,9 +15,16 @@ class MainActivity : AppCompatActivity() {
         ParcRepository.getParc().observe(this, Observer {//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
                 Log.e("observe", "on est la")
-                findViewById<TextView>(R.id.text).text = it.get(0).toString()
                 }
             )
+        })
+
+        RouteRepository.getRouteDetail(route = 1,mobile = 270).observe(this, Observer {
+            findViewById<TextView>(R.id.text).text = it.retourRoute.get(0).code
+        })
+
+        DistanceRepository.getparcDistance().observe(this, Observer {
+            Log.e("observe dist", ""+it.retourDistance.get(0).origine)
         })
 
 
