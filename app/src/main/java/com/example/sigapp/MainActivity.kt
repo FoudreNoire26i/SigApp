@@ -1,13 +1,20 @@
 package com.example.sigapp
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import com.example.sigapp.JsonModelClass.Distance
 import com.example.sigapp.JsonModelClass.ParcPoint
 import com.example.sigapp.JsonModelClass.ParcRoute
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
