@@ -19,8 +19,17 @@ import androidx.lifecycle.Observer
 import com.example.sigapp.JsonModelClass.Distance
 import com.example.sigapp.JsonModelClass.ParcPoint
 import com.example.sigapp.JsonModelClass.ParcRoute
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
+
+
+
+    companion object {
+        private lateinit var metier : Metier
+    }
+
 
     private lateinit var labelRoutes: TextView
     lateinit var imageView: ImageView
@@ -28,6 +37,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        metier = Metier(this)
+        Log.e("YO", "3s avant")
+        Executors.newSingleThreadScheduledExecutor().schedule({
+            Log.e("GOOOO", "Je pars de 1 à 6")
+        }, 3, TimeUnit.SECONDS)
 
         labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
