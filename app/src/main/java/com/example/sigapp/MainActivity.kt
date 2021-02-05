@@ -38,17 +38,30 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+
         metier = Metier(this)
-        Log.e("YO", "3s avant")
         Executors.newSingleThreadScheduledExecutor().schedule({
             Log.e("GOOOO", "Je pars de 1 à 6")
+
+
+
         }, 3, TimeUnit.SECONDS)
 
         labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
+        val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(getColor(this,R.color.grey))
 
         ParcRepository.getParc().observe(this, Observer {//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
+
+                metier.drawPath(it[3],it[5]).observe(this, Observer {
+                    drawPath(it,canvas)
+                })
+
+
                 Log.e("observe", "on est la")
                 //labelRoutes.text = it.toString()
                 it.forEach {
@@ -57,14 +70,6 @@ class MainActivity : AppCompatActivity() {
                 }
             })
         })
-
-        DistanceRepository.getparcDistance().observe(this, Observer {
-            Log.e("observe dist", ""+it.retourDistance.get(0).origine)
-        })
-
-        val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        canvas.drawColor(getColor(this,R.color.grey))
 
         // dessin des routes
         val paintRoutes = Paint()
@@ -110,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
         myRoadsList.forEach {
             when(it.routeId){
-                "1"->canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paintRoutesRed)
+                "1"->        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paintRoutesRed)
                 "2"->        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),paintRoutesRed)
                 "3"->        canvas.drawLine((2*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
                 "4"->        canvas.drawLine((2*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
