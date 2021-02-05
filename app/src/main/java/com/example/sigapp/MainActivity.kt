@@ -41,12 +41,6 @@ class MainActivity : AppCompatActivity() {
 
 
         metier = Metier(this)
-        Executors.newSingleThreadScheduledExecutor().schedule({
-            Log.e("GOOOO", "Je pars de 1 à 6")
-
-
-
-        }, 3, TimeUnit.SECONDS)
 
         labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
@@ -54,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         val canvas = Canvas(bitmap)
         canvas.drawColor(getColor(this,R.color.grey))
 
-        ParcRepository.getParc().observe(this, Observer {//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
+        ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
 
                 metier.drawPath(it[3],it[5]).observe(this, Observer {
@@ -63,13 +57,30 @@ class MainActivity : AppCompatActivity() {
 
 
                 Log.e("observe", "on est la")
-                //labelRoutes.text = it.toString()
+                labelRoutes.text = it.toString()
+                metier.drawPath(it[0], it[5])
                 it.forEach {
                     var parcPoint: ParcPoint = it
                     Log.d("Point ",parcPoint.id)
                 }
             })
         })
+
+
+        DistanceRepository.getparcDistance().observe(this, Observer {
+            Log.e("observe dist", ""+it.retourDistance.get(0).origine)
+        })
+
+
+
+        val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        canvas.drawColor(Color.BLACK)
+        val paint = Paint()
+        paint.color = Color.WHITE
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 8F
+        paint.isAntiAlias = true
 
         // dessin des routes
         val paintRoutes = Paint()
