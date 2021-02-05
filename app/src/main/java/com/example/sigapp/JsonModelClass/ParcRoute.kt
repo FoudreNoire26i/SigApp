@@ -2,7 +2,8 @@ package com.example.sigapp.JsonModelClass
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.sql.Date
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class ParcRoute (
     @SerializedName("ROU_ID")

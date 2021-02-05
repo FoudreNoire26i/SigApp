@@ -22,7 +22,6 @@ object RouteRepository {
             }
 
             override fun onResponse(call: Call<RouteDetail>, response: Response<RouteDetail>) {
-                Log.e("route detail get", "nice")
                 response.body()?.let { routeDetailLiveData.postValue(it) }
             }
         })
