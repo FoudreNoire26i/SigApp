@@ -48,7 +48,10 @@ class MainActivity : AppCompatActivity() {
             ParcRepository.getPoints().observe(this, Observer {
                 Log.e("observe", "on est la")
                 labelRoutes.text = it.toString()
-                metier.drawPath(it[0], it[5])
+                metier.drawPath(it[10], it[7]).observe(this, {
+                    Log.e("yo","yo")
+                })
+
                 it.forEach {
                     var parcPoint: ParcPoint = it
                     Log.d("Point ",parcPoint.id)
