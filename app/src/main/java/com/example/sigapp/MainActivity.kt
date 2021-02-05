@@ -51,8 +51,8 @@ class MainActivity : AppCompatActivity() {
         ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
 
-                metier.drawPath(it[3],it[5]).observe(this, Observer {
-                    drawPath(it,canvas)
+                metier.drawPath(it[10],it[7]).observe(this, Observer {routeList ->
+                    drawPath(routeList,canvas)
                 })
 
 
@@ -72,10 +72,6 @@ class MainActivity : AppCompatActivity() {
         })
 
 
-
-        val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        canvas.drawColor(Color.BLACK)
         val paint = Paint()
         paint.color = Color.WHITE
         paint.style = Paint.Style.STROKE
