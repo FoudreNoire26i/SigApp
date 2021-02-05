@@ -1,14 +1,19 @@
 package com.example.sigapp
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.example.sigapp.JsonModelClass.Distance
@@ -20,23 +25,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var labelRoutes: TextView
     lateinit var imageView: ImageView
 
-
-    var paint: Paint = Paint()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        paint.setColor(Color.BLACK);
-
         labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
-
 
         ParcRepository.getParc().observe(this, Observer {//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
                 Log.e("observe", "on est la")
-                labelRoutes.text = it.toString()
+                //labelRoutes.text = it.toString()
                 it.forEach {
                     var parcPoint: ParcPoint = it
                     Log.d("Point ",parcPoint.id)
@@ -44,158 +43,95 @@ class MainActivity : AppCompatActivity() {
             })
         })
 
-
         DistanceRepository.getparcDistance().observe(this, Observer {
             Log.e("observe dist", ""+it.retourDistance.get(0).origine)
         })
 
-
-
         val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
-        canvas.drawColor(Color.BLACK)
-        val paint = Paint()
-        paint.color = Color.WHITE
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 8F
-        paint.isAntiAlias = true
+        canvas.drawColor(getColor(this,R.color.grey))
 
         // dessin des routes
-        //KA
-        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paint)
-        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),paint)
-        //IO
-        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),paint)
-        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),paint)
-        //AC
-        canvas.drawLine((2*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((2*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        //KC
-        canvas.drawLine((canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        //KB
-        canvas.drawLine((1*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((1*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),paint)
-        //BG
-        canvas.drawLine((canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),paint)
-        //BL
-        canvas.drawLine((1*canvas.width/4-15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4-15).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((1*canvas.width/4+15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4+15).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //FE
-        canvas.drawLine((3*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(4*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((3*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(4*canvas.height/7).toFloat(),paint)
-        //DM
-        canvas.drawLine((2*canvas.width/4-20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((2*canvas.width/4+20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //GN
-        canvas.drawLine((1*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((1*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //OD
-        canvas.drawLine((2*canvas.width/4-20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        canvas.drawLine((2*canvas.width/4+20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //IL
-        canvas.drawLine((canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //ED
-        canvas.drawLine((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //HM
-        canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paint)
-        //CF
-        canvas.drawLine((2*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paint)
-        //BJ
-        canvas.drawLine((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paint)
-        //IH
-        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),1*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //LH
-        canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //NM
-        canvas.drawLine((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
-        //JI
-        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        val paintRoutes = Paint()
+        paintRoutes.color = Color.WHITE
+        paintRoutes.style = Paint.Style.STROKE
+        paintRoutes.strokeWidth = 8F
+        paintRoutes.isAntiAlias = true
+        drawRoutes(canvas,paintRoutes)
 
-
+        //dessin point
         val paintPoint = Paint()
         paintPoint.color = Color.CYAN
         paintPoint.isAntiAlias = true
         paintPoint.strokeWidth = 60F
         paintPoint.strokeCap = Paint.Cap.ROUND
         paintPoint.isLinearText = true
+        drawPoints(canvas,paintPoint)
 
-        // dessin point
-
-        canvas.drawPoint((1*canvas.width/4).toFloat(),(1*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((1*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(1*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((3*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
-        canvas.drawPoint((2*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
-
+        // dessin lettre
         val paintText = Paint()
         paintText.color = Color.MAGENTA
         paintText.isLinearText = true
         paintText.textSize = 70F
-
-        canvas.drawText("K",(0.70*canvas.width/4).toFloat(),(0.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("A",(2.10*canvas.width/4).toFloat(),(0.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("B",(0.70*canvas.width/4).toFloat(),(1.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("C",(2.10*canvas.width/4).toFloat(),(1.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("G",(1.10*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("J",(2.20*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("F",(3.10*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("I",(0.80*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("O",(2.10*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("E",(3.10*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("L",(0.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("H",(0.70*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("N",(2.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("D",(3.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
-        canvas.drawText("M",(1.90*canvas.width/4).toFloat(),(6.40*canvas.height/7).toFloat(),paintText)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        drawLetters(canvas,paintText)
 
         imageView.setImageBitmap(bitmap)
 
         Log.d("width",windowManager.defaultDisplay.width.toString())
         Log.d("width",windowManager.defaultDisplay.height.toString())
 
+        var myRoadsList: List<ParcRoute> = emptyList()
+        drawPath(myRoadsList,canvas)
 
     }
+
+    private fun drawPath(myRoadsList: List<ParcRoute>,canvas: Canvas) {
+
+        val paintRoutesRed = Paint()
+        paintRoutesRed.color = Color.YELLOW
+        paintRoutesRed.style = Paint.Style.STROKE
+        paintRoutesRed.strokeWidth = 8F
+        paintRoutesRed.isAntiAlias = true
+
+        myRoadsList.forEach {
+            when(it.routeId){
+                "1"->canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paintRoutesRed)
+                "2"->        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),paintRoutesRed)
+                "3"->        canvas.drawLine((2*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "4"->        canvas.drawLine((2*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "5"->        canvas.drawLine((canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "6"->        canvas.drawLine((canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "7"->        canvas.drawLine((1*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "8"->        canvas.drawLine((1*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                "9"->        canvas.drawLine((2*canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "10"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "11"->       canvas.drawLine((1*canvas.width/4-15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4-15).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "13"->       canvas.drawLine((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "15"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "16"->       canvas.drawLine((1*canvas.width/4+15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4+15).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "18"->       canvas.drawLine((canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "19"->       canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "20"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),1*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "21"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),paintRoutesRed)
+                "22"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),paintRoutesRed)
+                "23"->       canvas.drawLine((canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "24"->       canvas.drawLine((canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                "26"->       canvas.drawLine((1*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "27"->       canvas.drawLine((1*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "28"->       canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paintRoutesRed)
+                "29"->       canvas.drawLine((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "30"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "31"->       canvas.drawLine((2*canvas.width/4+20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "33"->       canvas.drawLine((3*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(4*canvas.height/7).toFloat(),paintRoutesRed)
+                "34"->       canvas.drawLine((3*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(4*canvas.height/7).toFloat(),paintRoutesRed)
+                "35"->       canvas.drawLine((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "37"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                "38"->       canvas.drawLine((2*canvas.width/4+20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+
+            }
+        }
+    }
+
     fun dijkstra(listPoint: List<ParcPoint>, listRoute: List<ParcRoute>, dep : ParcPoint, arr : ParcPoint, dist : Distance) : List<ParcRoute>{
         var pred = emptyMap<ParcPoint, String>().toMutableMap()
         var l = emptyMap<ParcPoint, Double>().toMutableMap()
@@ -247,5 +183,97 @@ class MainActivity : AppCompatActivity() {
         }
 */
         return results
+    }
+
+    private fun drawLetters(canvas: Canvas, paintText: Paint){
+        canvas.drawText("K",(0.70*canvas.width/4).toFloat(),(0.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("A",(2.10*canvas.width/4).toFloat(),(0.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("B",(0.70*canvas.width/4).toFloat(),(1.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("C",(2.10*canvas.width/4).toFloat(),(1.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("G",(1.10*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("J",(2.20*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("F",(3.10*canvas.width/4).toFloat(),(2.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("I",(0.80*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("O",(2.10*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("E",(3.10*canvas.width/4).toFloat(),(3.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("L",(0.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("H",(0.70*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("N",(2.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("D",(3.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
+        canvas.drawText("M",(1.90*canvas.width/4).toFloat(),(6.40*canvas.height/7).toFloat(),paintText)
+    }
+
+    private fun drawPoints(canvas: Canvas,paintPoint: Paint){
+        canvas.drawPoint((1*canvas.width/4).toFloat(),(1*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((1*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(1*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((3*canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
+        canvas.drawPoint((2*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintPoint)
+    }
+
+    private fun drawRoutes(canvas: Canvas, paint: Paint) {
+        //KA
+        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paint)
+        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),paint)
+        //IO
+        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),paint)
+        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),paint)
+        //AC
+        canvas.drawLine((2*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((2*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        //KC
+        canvas.drawLine((canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        //KB
+        canvas.drawLine((1*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((1*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),paint)
+        //BG
+        canvas.drawLine((canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        //BL
+        canvas.drawLine((1*canvas.width/4-15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4-15).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((1*canvas.width/4+15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4+15).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //FE
+        canvas.drawLine((3*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(4*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((3*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(4*canvas.height/7).toFloat(),paint)
+        //DM
+        canvas.drawLine((2*canvas.width/4-20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((2*canvas.width/4+20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //GN
+        canvas.drawLine((1*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((1*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //OD
+        canvas.drawLine((2*canvas.width/4-20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((2*canvas.width/4+20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //IL
+        canvas.drawLine((canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //ED
+        canvas.drawLine((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //HM
+        canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paint)
+        //CF
+        canvas.drawLine((2*canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        canvas.drawLine((2*canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        //BJ
+        canvas.drawLine((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paint)
+        //IH
+        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),1*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //LH
+        canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //NM
+        canvas.drawLine((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paint)
+        //JI
+        canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paint)
+
     }
 }
