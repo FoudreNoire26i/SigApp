@@ -55,14 +55,15 @@ class Metier(var context: MainActivity){
             myPath.postValue(emptyList())
             return myPath
         }
-
+        var expectedPath = dijkstra(dep, arr)
+        //todo : utiliser startPath pour renvoyer myPath en fonction de ou on est
         //startPath(expectedPath.first().routeId.toInt(), expectedPath.last().routeId.toInt(), expectedPath)
         myPath.postValue(dijkstra(dep, arr))
         return myPath
     }
 
     fun startPath(firstRouteId : Int, lastRouteId : Int, path : List<ParcRoute>){
-        if (path.indexOfFirst { it.routeId == firstRouteId.toString() } < path.count() - 1||lastRouteId==firstRouteId){
+        if (path.indexOfFirst { it.routeId == firstRouteId.toString() } >= path.count()||lastRouteId==firstRouteId){
             Log.e("Bien arrive", "GG")
             return
         }

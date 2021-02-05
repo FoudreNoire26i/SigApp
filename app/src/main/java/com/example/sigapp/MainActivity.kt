@@ -42,22 +42,23 @@ class MainActivity : AppCompatActivity() {
 
         labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
+        DistanceRepository.getparcDistance().observe(this, Observer { distance ->
+            ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
+                ParcRepository.getPoints().observe(this, Observer {
+                    Log.e("observe", "on est la")
+                    labelRoutes.text = it.toString()
+                    metier.drawPath(it[10], it[7]).observe(this, {
+                        Log.e("yo","yo")
+                    })
 
-
-        ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
-            ParcRepository.getPoints().observe(this, Observer {
-                Log.e("observe", "on est la")
-                labelRoutes.text = it.toString()
-                metier.drawPath(it[10], it[7]).observe(this, {
-                    Log.e("yo","yo")
+                    it.forEach {
+                        var parcPoint: ParcPoint = it
+                        Log.d("Point ",parcPoint.id)
+                    }
                 })
-
-                it.forEach {
-                    var parcPoint: ParcPoint = it
-                    Log.d("Point ",parcPoint.id)
-                }
             })
         })
+
 
 
 
