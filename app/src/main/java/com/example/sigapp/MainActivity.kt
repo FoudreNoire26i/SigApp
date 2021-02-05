@@ -36,10 +36,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         metier = Metier(this)
-        Log.e("YO", "3s avant")
-        Executors.newSingleThreadScheduledExecutor().schedule({
-            Log.e("GOOOO", "Je pars de 1 à 6")
-        }, 3, TimeUnit.SECONDS)
 
 
         paint.setColor(Color.BLACK);
@@ -48,20 +44,16 @@ class MainActivity : AppCompatActivity() {
         imageView = findViewById(R.id.imageView)
 
 
-        ParcRepository.getParc().observe(this, Observer {//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
+        ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
             ParcRepository.getPoints().observe(this, Observer {
                 Log.e("observe", "on est la")
                 labelRoutes.text = it.toString()
+                metier.drawPath(it[0], it[5])
                 it.forEach {
                     var parcPoint: ParcPoint = it
                     Log.d("Point ",parcPoint.id)
                 }
             })
-        })
-
-
-        DistanceRepository.getparcDistance().observe(this, Observer {
-            Log.e("observe dist", ""+it.retourDistance.get(0).origine)
         })
 
 
@@ -175,35 +167,6 @@ class MainActivity : AppCompatActivity() {
         canvas.drawText("D",(3.10*canvas.width/4).toFloat(),(4.90*canvas.height/7).toFloat(),paintText)
         canvas.drawText("M",(1.90*canvas.width/4).toFloat(),(6.40*canvas.height/7).toFloat(),paintText)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         imageView.setImageBitmap(bitmap)
 
         Log.d("width",windowManager.defaultDisplay.width.toString())
@@ -251,11 +214,9 @@ class MainActivity : AppCompatActivity() {
 
         var pointId = arr.id
         while (pointId != dep.id){
-            Log.e("route", "debut : ${pointId}, fin : ${pred[listPoint.first { it.id == pointId}]}")
             results.add(listRoute.first { route -> route.pointIdFin == pointId && route.pointIdDebut == pred[listPoint.first { it.id == pointId}] })
             pointId = pred[listPoint.first { it.id == pointId}] ?: "0"
         }
-        results.reversed().forEach { Log.e("route a prendre", it.routeId) }
 /*
         listPoint.forEach {
             Log.e("point ${it.nom}",  ": ${pred[it]}")

@@ -32,7 +32,7 @@ class Metier(var context: MainActivity){
     lateinit var dist : Distance
     lateinit var listRoute: List<ParcRoute>
     lateinit var listPoint: List<ParcPoint>
-    lateinit var myPath : MutableLiveData<List<ParcRoute>>
+    var myPath = MutableLiveData<List<ParcRoute>>()
     var timeBeforeChangingRoad :Double = 0.0
     //var routeStatus : RouteStatus = RouteStatus.Atttribue
 
@@ -56,19 +56,24 @@ class Metier(var context: MainActivity){
             return myPath
         }
 
-        var expectedPath = dijkstra(dep, arr)
-
         //startPath(expectedPath.first().routeId.toInt(), expectedPath.last().routeId.toInt(), expectedPath)
         myPath.postValue(dijkstra(dep, arr))
         return myPath
     }
 
     fun startPath(firstRouteId : Int, lastRouteId : Int, path : List<ParcRoute>){
-        if (lastRouteId==firstRouteId){
+        if (path.indexOfFirst { it.routeId == firstRouteId.toString() } < path.count() - 1||lastRouteId==firstRouteId){
             Log.e("Bien arrive", "GG")
             return
         }
         bookRoute(routeId = firstRouteId)
+        var newPath = path.toMutableList()
+        var tmp = path[path.indexOfFirst { it.routeId == firstRouteId.toString() } + 1]
+        newPath[newPath.indexOfFirst { it.routeId == firstRouteId.toString() } + 1] = newPath[newPath.indexOfFirst { it.routeId == firstRouteId.toString() }]
+        newPath[newPath.indexOfFirst { it.routeId == firstRouteId.toString() }] = tmp
+
+        myPath.postValue(newPath)
+
         //todo : mettre la nouvelle route en premiere
         Executors.newSingleThreadScheduledExecutor().schedule({
             startPath(
