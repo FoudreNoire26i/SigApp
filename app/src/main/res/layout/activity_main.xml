@@ -8,19 +8,62 @@
     android:background="@color/grey"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/textPoints"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:layout_marginTop="100dp"
-        android:layout_centerInParent="true"
-        />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
+
+
+    <TextView
+        android:id="@+id/textdep"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Point de départ :"
+        android:textSize="20dp"
+
+        android:layout_above="@+id/textarrive"
+        android:layout_alignParentLeft="true"
+        />
+    <Spinner
+        android:id="@+id/depart"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+
+        android:layout_above="@+id/arrive"
+        android:layout_toRightOf="@id/textdep"
+        />
+
+    <TextView
+        android:id="@+id/textarrive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Point d'arrivée :"
+        android:textSize="20dp"
+
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        />
+    <Spinner
+        android:id="@+id/arrive"
+        android:layout_width="80dp"
+        android:layout_height="30dp"
+
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@id/textarrive"
+
+        />
+    <Button
+        android:id="@+id/tracage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tracer le chemin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+
+        />
+
 
 </RelativeLayout>

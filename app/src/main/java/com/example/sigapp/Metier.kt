@@ -49,13 +49,14 @@ class Metier(var context: MainActivity){
         })
     }
 
-    fun drawPath(dep: ParcPoint, arr : ParcPoint) : LiveData<List<ParcRoute>>{
+    fun drawPath(depId: String, arrId : String) : LiveData<List<ParcRoute>>{
         if (listPoint.isNullOrEmpty() || listRoute.isNullOrEmpty()){
             Log.e("ERROR : E01draw path", "Did you init completely the Metier ?")
             myPath.postValue(emptyList())
             return myPath
         }
-
+        var dep = listPoint.first { depId == it.nom }
+        var arr = listPoint.first { arrId == it.nom }
         //startPath(expectedPath.first().routeId.toInt(), expectedPath.last().routeId.toInt(), expectedPath)
         myPath.postValue(dijkstra(dep, arr))
         return myPath
@@ -85,7 +86,7 @@ class Metier(var context: MainActivity){
     }
 
     fun bookRoute(routeId : Int){
-        RouteRepository.getRouteDetail(route = routeId, mobile = 270).observe(context, {
+        RouteRepository.getRouteDetail(route = routeId, mobile = 270).observe(context, Observer {
             Log.e("reserve route ${routeId}", "code : ${it.retourRoute[0].code}")
             //timeBeforeChangingRoad = - it.retourRoute[0].delay.toDouble()
             //routeStatus =  RouteStatus.valueOf(it.retourRoute[0].code)

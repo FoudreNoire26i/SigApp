@@ -8,5 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#6E6E6E</color>
-    <color name="sol">#AA948145</color>
+    <color name="point">#FF6C5C2C</color>
+    <color name="lettre">#F4DB88</color>
+    <color name="routes">#FF30448A</color>
 </resources>

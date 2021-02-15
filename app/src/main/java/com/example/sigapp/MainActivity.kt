@@ -10,8 +10,7 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.lifecycle.LifecycleOwner
@@ -33,41 +32,36 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var labelRoutes: TextView
     lateinit var imageView: ImageView
+    lateinit var buttonRefresh: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        buttonRefresh = findViewById<Button>(R.id.tracage)
+
+        val points = resources.getStringArray(R.array.points)
+        val spinner = findViewById<Spinner>(R.id.depart)
+        if (spinner != null) {
+            val adapter = ArrayAdapter(this,
+                    android.R.layout.simple_spinner_item, points)
+            spinner.adapter = adapter
+        }
+
+        val spinner2 = findViewById<Spinner>(R.id.arrive)
+        if (spinner2 != null) {
+            val adapter = ArrayAdapter(this,
+                    android.R.layout.simple_spinner_item, points)
+            spinner2.adapter = adapter
+        }
 
 
         metier = Metier(this)
 
-        labelRoutes = findViewById(R.id.textPoints)
         imageView = findViewById(R.id.imageView)
         val bitmap = Bitmap.createBitmap(windowManager.defaultDisplay.width , windowManager.defaultDisplay.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(getColor(this,R.color.grey))
-
-        ParcRepository.getParc().observe(this, Observer {parc ->//le observe est dans le observe car il faut que les parcs soient chargés pour avoir les points
-            ParcRepository.getPoints().observe(this, Observer {
-
-                metier.drawPath(it[10],it[7]).observe(this, Observer {routeList ->
-                    drawPath(routeList,canvas)
-                })
-
-
-                Log.e("observe", "on est la")
-                labelRoutes.text = it.toString()
-                metier.drawPath(it[10], it[7]).observe(this, {
-                    Log.e("yo","yo")
-                })
-
-                it.forEach {
-                    var parcPoint: ParcPoint = it
-                    Log.d("Point ",parcPoint.id)
-                }
-            })
-        })
 
 
         DistanceRepository.getparcDistance().observe(this, Observer {
@@ -83,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
         // dessin des routes
         val paintRoutes = Paint()
-        paintRoutes.color = Color.WHITE
+        paintRoutes.color = getColor(this,R.color.routes)
         paintRoutes.style = Paint.Style.STROKE
         paintRoutes.strokeWidth = 8F
         paintRoutes.isAntiAlias = true
@@ -91,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
         //dessin point
         val paintPoint = Paint()
-        paintPoint.color = Color.CYAN
+        paintPoint.color = getColor(this,R.color.point)
         paintPoint.isAntiAlias = true
         paintPoint.strokeWidth = 60F
         paintPoint.strokeCap = Paint.Cap.ROUND
@@ -100,20 +94,91 @@ class MainActivity : AppCompatActivity() {
 
         // dessin lettre
         val paintText = Paint()
-        paintText.color = Color.MAGENTA
+        paintText.color = getColor(this,R.color.lettre)
         paintText.isLinearText = true
         paintText.textSize = 70F
         drawLetters(canvas,paintText)
 
-        imageView.setImageBitmap(bitmap)
 
         Log.d("width",windowManager.defaultDisplay.width.toString())
         Log.d("width",windowManager.defaultDisplay.height.toString())
 
-        var myRoadsList: List<ParcRoute> = emptyList()
-        drawPath(myRoadsList,canvas)
+
+        drawRoutes(canvas,paint)
+        drawPoints(canvas,paintPoint)
+        imageView.setImageBitmap(bitmap)
+
+        metier.myPath.observe(this, Observer {
+            drawPath(it, canvas)
+            drawPoints(canvas, paintPoint)
+            imageView.setImageBitmap(bitmap)
+        })
+
+
+        ParcRepository.getParc().observe(this, Observer {parc ->
+            drawRedPath(parc.myParc[1].listRoutes,canvas)
+            drawPoints(canvas, paintPoint)
+        })
+
+        imageView.setImageBitmap(bitmap)
+
+        buttonRefresh.setOnClickListener {
+            drawRoutes(canvas, paint)
+            drawRedPath(metier.listRoute, canvas)
+            metier.drawPath(spinner.selectedItem.toString(), spinner2.selectedItem.toString())
+        }
 
     }
+
+    private fun drawRedPath(myRoadsList: List<ParcRoute>,canvas: Canvas) {
+
+        val paintRoutesRed = Paint()
+        paintRoutesRed.color = Color.RED
+        paintRoutesRed.style = Paint.Style.STROKE
+        paintRoutesRed.strokeWidth = 8F
+        paintRoutesRed.isAntiAlias = true
+
+        myRoadsList.forEach {
+            if(it.mobileId!="0"){
+                when(it.routeId){
+                    "1"->        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7-15).toFloat(),paintRoutesRed)
+                    "2"->        canvas.drawLine((canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(canvas.height/7+15).toFloat(),paintRoutesRed)
+                    "3"->        canvas.drawLine((2*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "4"->        canvas.drawLine((2*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "5"->        canvas.drawLine((canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "6"->        canvas.drawLine((canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "7"->        canvas.drawLine((1*canvas.width/4-20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "8"->        canvas.drawLine((1*canvas.width/4+20).toFloat(),(canvas.height/7).toFloat(),1*(canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),paintRoutesRed)
+                    "9"->        canvas.drawLine((2*canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "10"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "11"->       canvas.drawLine((1*canvas.width/4-15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4-15).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "13"->       canvas.drawLine((1*canvas.width/4).toFloat(),(2*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "15"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "16"->       canvas.drawLine((1*canvas.width/4+15).toFloat(),(2*canvas.height/7).toFloat(),(0.3*canvas.width/4+15).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "18"->       canvas.drawLine((canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "19"->       canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),(0.3*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "20"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),1*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "21"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7-15).toFloat(),paintRoutesRed)
+                    "22"->       canvas.drawLine((1*canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),2*(canvas.width/4).toFloat(),(4*canvas.height/7+15).toFloat(),paintRoutesRed)
+                    "23"->       canvas.drawLine((canvas.width/4-20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "24"->       canvas.drawLine((canvas.width/4+20).toFloat(),(2*canvas.height/7).toFloat(),(canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),paintRoutesRed)
+                    "26"->       canvas.drawLine((1*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4-10).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "27"->       canvas.drawLine((1*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),2*(canvas.width/4+10).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "28"->       canvas.drawLine((1*canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),paintRoutesRed)
+                    "29"->       canvas.drawLine((2*canvas.width/4).toFloat(),(6*canvas.height/7).toFloat(),2*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "30"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "31"->       canvas.drawLine((2*canvas.width/4+20).toFloat(),(6*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "33"->       canvas.drawLine((3*canvas.width/4-20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(4*canvas.height/7).toFloat(),paintRoutesRed)
+                    "34"->       canvas.drawLine((3*canvas.width/4+20).toFloat(),(3*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(4*canvas.height/7).toFloat(),paintRoutesRed)
+                    "35"->       canvas.drawLine((3*canvas.width/4).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "37"->       canvas.drawLine((2*canvas.width/4-20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4-7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+                    "38"->       canvas.drawLine((2*canvas.width/4+20).toFloat(),(4*canvas.height/7).toFloat(),3*(canvas.width/4+7).toFloat(),(5*canvas.height/7).toFloat(),paintRoutesRed)
+
+                }
+            }
+        }
+    }
+
 
     private fun drawPath(myRoadsList: List<ParcRoute>,canvas: Canvas) {
 
